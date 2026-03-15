@@ -3,16 +3,16 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-base_options = python.BaseOptions(model_asset_path = "hand_landmarker.task")
+BASE_OPTIONS = python.BaseOptions(model_asset_path = "hand_landmarker.task")
 
-options = vision.HandLandmarkerOptions(base_options = base_options,
+OPTIONS = vision.HandLandmarkerOptions(base_options = BASE_OPTIONS,
                                        running_mode = vision.RunningMode.VIDEO,
                                        num_hands = 1, 
                                        min_hand_detection_confidence = 0.6,
                                        min_hand_presence_confidence = 0.6,
                                        min_tracking_confidence = 0.6)
 
-model = vision.HandLandmarker.create_from_options(options)
+MODEL = vision.HandLandmarker.create_from_options(OPTIONS)
 
 HAND_CONNECTIONS = [(0,1), (1,2), (2,3), (3,4), #thumb
                     (5,6), (6,7), (7,8), #index
@@ -39,7 +39,7 @@ def main():
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         mp_image = mp.Image(image_format = mp.ImageFormat.SRGB, data = rgb)
-        result = model.detect_for_video(mp_image, timestamp)
+        result = MODEL.detect_for_video(mp_image, timestamp)
         timestamp += 1
 
         points = get_points(result, [], frame)
