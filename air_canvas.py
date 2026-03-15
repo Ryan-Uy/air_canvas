@@ -3,7 +3,7 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-base_options = python.BaseOpetions("hand_landmarker.task")
+base_options = python.BaseOpetions(model_asset_path = "hand_landmarker.task")
 
 options = vision.HandLandmarkerOptions(base_options = base_options,
                                        running_mode = vision.RunningMode.VIDEO,
