@@ -14,21 +14,38 @@ options = vision.HandLandmarkerOptions(base_options = base_options,
 
 model = vision.HandLandmarker.create_from_options(options)
 
-stream = cv2.VideoCapture(0)
+def main():
+    stream = cv2.VideoCapture(0)
+    timestamp = 0
 
-while True:
-    ret, frame = stream.read()
+    active_color = (0,0,0)
 
-    if not ret:
-        print("Error: No valid frame found")
-        break
+    while True:
+        ret, frame = stream.read()
+
+        if not ret:
+            print("Error: No valid frame found")
+            break
     
-    frame = cv2.flip(frame,1)
-    cv2.imshow("Air Canvas", frame)
+        frame = cv2.flip(frame,1)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    if cv2.waitKey(1) == 27:
-        break
+        mp_image = mp.Image(image_format = mp.ImageFormat.SRGB, data = rgb)
+        result = model.detect_for_video(mp_image, timestamp)
+        timestamp += 1
 
-stream.release()
-cv2.destroyAllWindows()
+        draw_points(result, frame)
 
+        cv2.imshow("Air Canvas", frame)
+
+        if cv2.waitKey(1) == 27:
+            break
+
+    stream.release()
+    cv2.destroyAllWindows()
+
+def draw_points(result, frame):
+    pass
+
+if __name__ == "__main__":
+    main()
