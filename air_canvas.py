@@ -40,6 +40,8 @@ def main():
     active_color = (0,0,255)
     mode = "Select"
 
+    last_points = []
+
     while True:
         ret, frame = stream.read()
 
@@ -56,11 +58,16 @@ def main():
 
         points = get_points(result, [], frame)
 
-        check_mode(points)
+        mode = check_mode(points)
 
-        active_color = choose_color(points) #temporary
+        if mode == 'Select':
+            active_color = choose_color(points) 
+        else:
+            draw(points, last_points)
 
-        draw_skeleton(points, frame, active_color)        
+        draw_skeleton(points, frame, active_color)
+
+        last_points = points     
 
         cv2.putText(frame, f"Mode: {mode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
         cv2.putText(frame, F"Current color: ", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
@@ -68,7 +75,6 @@ def main():
 
 
         cv2.imshow("Air Canvas", frame)
-
         if cv2.waitKey(1) == 27:
             break
 
@@ -76,6 +82,9 @@ def main():
     cv2.destroyAllWindows()
 
 def check_mode(points):
+    return 'Select' #temporary
+
+def draw(points, last_points):
     pass
 
 def choose_color(points):
