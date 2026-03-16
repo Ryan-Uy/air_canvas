@@ -38,7 +38,7 @@ def main():
     timestamp = 0
 
     active_color = (0,0,255)
-    mode = "Draw"
+    mode = "Select"
 
     while True:
         ret, frame = stream.read()
@@ -56,10 +56,11 @@ def main():
 
         points = get_points(result, [], frame)
 
-        draw_skeleton(points, frame, active_color)
-
         check_mode(points)
-        choose_color(points) #temporary
+
+        active_color = choose_color(points) #temporary
+
+        draw_skeleton(points, frame, active_color)        
 
         cv2.putText(frame, f"Mode: {mode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
         cv2.putText(frame, F"Current color: ", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
@@ -78,15 +79,32 @@ def check_mode(points):
     pass
 
 def choose_color(points):
-    fingers = [(8,7), (12,11), (16,15), (20,19)]
+    fingertips = [(8,7), (12,11), (16,15), (20,19)]
     finger_count = 0
+    if points:
+        #loops for fingers excluding thumb
+        for tip, joint in fingertips: 
+            if points[tip][1] < points[joint][1]:
+                finger_count += 1
+        #checks thumb angle between 3,2,1
+        p1 = np.array(points[3])
+        p2 = np.array(points[2])
+        p3 = np.array(points[1])
+        v1 = p1 - p2
+        v2 = p3 - p2
+        angle = np.arccos( np.dot(v1, v2)/ (np.linalg.norm(v1)*np.linalg.norm(v2)) )
 
-    #loops for fingers excluding thumb
-    for tip, joint in fingers: 
-        if points and points[tip][1] < points[joint][1]:
+        if angle > 3*np.pi/4:
             finger_count += 1
-    #checks thumb angle
-    print(finger_count)
+
+    colors = {0:(0,0,255),
+              1:(0,165,255),
+              2:(0,255,255),
+              3:(0,255,0),
+              4:(255,0,0),
+              5:(128,0,128)}
+    
+    return colors[finger_count]
     
 
 
