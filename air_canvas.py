@@ -41,7 +41,8 @@ COLORS = {BLACK : 'Black',
           BLUE : 'Blue',
           PURPLE : 'Purple'}
 
-THUMB_ANGLE_THRESHOLD = 2.5 #in radians
+THUMB_ANGLE_THRESHOLD = 2.5 #radians
+CHANGE_MODE_DISTANCE_THRESHOLD = 25 #px
 
 def main():
     stream = cv2.VideoCapture(0)
@@ -97,7 +98,7 @@ def check_mode(points, mode):
         p2 = np.array(points[21])
         distance = np.linalg.norm(p1-p2)
         print(f"{distance:.4f}")
-        if distance < 50:
+        if distance < CHANGE_MODE_DISTANCE_THRESHOLD:
             return 'Draw' if mode == 'Select' else 'Select'
     return mode
 
