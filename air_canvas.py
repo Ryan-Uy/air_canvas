@@ -8,7 +8,7 @@ BASE_OPTIONS = python.BaseOptions(model_asset_path = "hand_landmarker.task")
 
 OPTIONS = vision.HandLandmarkerOptions(base_options = BASE_OPTIONS,
                                        running_mode = vision.RunningMode.VIDEO,
-                                       num_hands = 1, 
+                                       num_hands = 2, 
                                        min_hand_detection_confidence = 0.6,
                                        min_hand_presence_confidence = 0.6,
                                        min_tracking_confidence = 0.6)
@@ -29,7 +29,7 @@ RED = (0,0,255)
 ORANGE = (0,165,255)
 YELLOW =(0,255,255)
 GREEN = (0,255,0)
-BLUE = (0,255,0)
+BLUE = (255,0,0)
 PURPLE = (128,0,128)
 
 COLORS = {BLACK : 'Black',
@@ -41,7 +41,7 @@ COLORS = {BLACK : 'Black',
           BLUE : 'Blue',
           PURPLE : 'Purple'}
 
-THUMB_ANGLE_THRESHOLD = 3*np.pi/4
+THUMB_ANGLE_THRESHOLD = 2.5 #in radians
 
 def main():
     stream = cv2.VideoCapture(0)
@@ -68,7 +68,7 @@ def main():
 
         points = get_points(result, [], frame)
 
-        mode = check_mode(points)
+        mode = check_mode(points, mode)
 
         if mode == 'Select':
             active_color = choose_color(points) 
@@ -91,10 +91,20 @@ def main():
     stream.release()
     cv2.destroyAllWindows()
 
-def check_mode(points):
-    return 'Select' #temporary
+def check_mode(points, mode):
+    if len(points) == 22:
+        p1 = np.array(points[0])
+        p2 = np.array(points[21])
+        distance = np.linalg.norm(p1-p2)
+        print(f"{distance:.4f}")
+        if distance < 50:
+            return 'Draw' if mode == 'Select' else 'Select'
+    return mode
 
 def draw(points, last_points):
+    print("drawing")
+
+def is_pinched(points):
     pass
 
 def choose_color(points):
@@ -132,6 +142,9 @@ def get_points(result, points, frame):
         for landmark in result.hand_landmarks[0]:
             x,y = int(landmark.x*w), int(landmark.y*h)
             points.append((x,y))
+    if len(result.hand_landmarks) == 2: #checks for second hand
+        x2, y2 = int(result.hand_landmarks[1][8].x*w), int(result.hand_landmarks[1][8].y*h)
+        points.append((x2,y2)) #adds the index fingertip coordinates to points
     return points
 
 def draw_skeleton(points, frame, active_color):
