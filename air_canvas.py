@@ -69,7 +69,7 @@ def main():
 
         points = get_points(result, [], frame)
 
-        mode = check_mode(points, mode)
+        mode = check_mode(result.hand_landmarks)
 
         if mode == 'Select':
             active_color = choose_color(points) 
@@ -92,18 +92,13 @@ def main():
     stream.release()
     cv2.destroyAllWindows()
 
-def check_mode(points, mode):
-    if len(points) == 22:
-        p1 = np.array(points[0])
-        p2 = np.array(points[21])
-        distance = np.linalg.norm(p1-p2)
-        print(f"{distance:.4f}")
-        if distance < CHANGE_MODE_DISTANCE_THRESHOLD:
-            return 'Draw' if mode == 'Select' else 'Select'
-    return mode
+def check_mode(landmarks):
+    if len(landmarks) == 2:
+        return "Select"
+    return "Draw"
 
 def draw(points, last_points):
-    print("drawing")
+    pass
 
 def is_pinched(points):
     pass
@@ -143,9 +138,6 @@ def get_points(result, points, frame):
         for landmark in result.hand_landmarks[0]:
             x,y = int(landmark.x*w), int(landmark.y*h)
             points.append((x,y))
-    if len(result.hand_landmarks) == 2: #checks for second hand
-        x2, y2 = int(result.hand_landmarks[1][8].x*w), int(result.hand_landmarks[1][8].y*h)
-        points.append((x2,y2)) #adds the index fingertip coordinates to points
     return points
 
 def draw_skeleton(points, frame, active_color):
