@@ -22,11 +22,22 @@ HAND_CONNECTIONS = [(0,1), (1,2), (2,3), (3,4), #thumb
                     (0,5), (5,9), (9,13), (13,17), (17,0) #palm
                     ]
 
+COLORS = {(0,0,0) : 'Black',
+          (255,255,255) : 'White',
+          (0,0,255) : 'Red',
+          (0,165,255) : 'Orange',
+          (0,255,255) : 'Yellow',
+          (0,255,0) : 'Green',
+          (255,0,0) : 'Blue',
+          (128,0,128) : 'Purple'}
+
+
 def main():
     stream = cv2.VideoCapture(0)
     timestamp = 0
 
     active_color = (0,0,255)
+    mode = "Draw"
 
     while True:
         ret, frame = stream.read()
@@ -46,6 +57,11 @@ def main():
 
         draw_skeleton(points, frame, active_color)
 
+        cv2.putText(frame, f"Mode: {mode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
+        cv2.putText(frame, F"Current color: ", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
+        cv2.putText(frame, COLORS[active_color], (180,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, active_color, 2)
+
+
         cv2.imshow("Air Canvas", frame)
 
         if cv2.waitKey(1) == 27:
@@ -53,6 +69,9 @@ def main():
 
     stream.release()
     cv2.destroyAllWindows()
+
+def check_mode(points, frame):
+    pass
 
 def get_points(result, points, frame):
     h,w,_ = frame.shape
