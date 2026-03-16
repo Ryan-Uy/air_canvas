@@ -75,6 +75,7 @@ def main():
 
 
         cv2.imshow("Air Canvas", frame)
+
         if cv2.waitKey(1) == 27:
             break
 
@@ -101,17 +102,18 @@ def choose_color(points):
         p3 = np.array(points[1])
         v1 = p1 - p2
         v2 = p3 - p2
-        angle = np.arccos( np.dot(v1, v2)/ (np.linalg.norm(v1)*np.linalg.norm(v2)) )
+        angle = np.arccos(np.dot(v1, v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
 
         if angle > 3*np.pi/4:
             finger_count += 1
 
-    colors = {0:(0,0,255),
-              1:(0,165,255),
-              2:(0,255,255),
-              3:(0,255,0),
-              4:(255,0,0),
-              5:(128,0,128)}
+    colors = {0:(0,0,255), #red 
+              1:(0,165,255), #orange
+              2:(0,255,255), #yellow
+              3:(0,255,0), #green
+              4:(255,0,0), #blue
+              5:(128,0,128) #purple
+              }
     
     return colors[finger_count]
     
