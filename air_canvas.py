@@ -41,12 +41,13 @@ COLORS = {BLACK : 'Black',
           BLUE : 'Blue',
           PURPLE : 'Purple'}
 
+THUMB_ANGLE_THRESHOLD = 3*np.pi/4
 
 def main():
     stream = cv2.VideoCapture(0)
     timestamp = 0
 
-    active_color = (0,0,255)
+    active_color = RED
     mode = "Select"
 
     last_points = []
@@ -78,10 +79,9 @@ def main():
 
         last_points = points     
 
-        cv2.putText(frame, f"Mode: {mode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
-        cv2.putText(frame, F"Current color: ", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
+        cv2.putText(frame, f"Mode: {mode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, WHITE, 2)
+        cv2.putText(frame, F"Current color: ", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, WHITE, 2)
         cv2.putText(frame, COLORS[active_color], (180,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, active_color, 2)
-
 
         cv2.imshow("Air Canvas", frame)
 
@@ -105,15 +105,16 @@ def choose_color(points):
         for tip, joint in fingertips: 
             if points[tip][1] < points[joint][1]:
                 finger_count += 1
-        #checks thumb angle between 3,2,1
+        #thumb points and vectors
         p1 = np.array(points[3])
         p2 = np.array(points[2])
         p3 = np.array(points[1])
         v1 = p1 - p2
         v2 = p3 - p2
-        angle = np.arccos(np.dot(v1, v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
+        #dot product to find angle
+        angle = np.arccos(np.dot(v1, v2)/(np.linalg.norm(v1)*np.linalg.norm(v2))) 
 
-        if angle > 3*np.pi/4:
+        if angle > THUMB_ANGLE_THRESHOLD: 
             finger_count += 1
 
     colors = {0:RED,
@@ -123,9 +124,7 @@ def choose_color(points):
               4:BLUE,
               5:PURPLE,}
     
-    return colors[finger_count]
-    
-
+    return colors[finger_count]   
 
 def get_points(result, points, frame):
     h,w,_ = frame.shape
@@ -138,7 +137,7 @@ def get_points(result, points, frame):
 def draw_skeleton(points, frame, active_color):
     if points:
         for start,end in HAND_CONNECTIONS:
-            cv2.line(frame, points[start], points[end], (0,255,0), 2)
+            cv2.line(frame, points[start], points[end], GREEN, 2)
         for point in points:
             cv2.circle(frame, point, 4, active_color, -1)
 
