@@ -49,9 +49,11 @@ def main():
     timestamp = 0
 
     active_color = RED
-    mode = "Select"
+    mode = "Draw"
 
     last_points = []
+
+    lines = []
 
     while True:
         ret, frame = stream.read()
@@ -74,7 +76,10 @@ def main():
         if mode == 'Select':
             active_color = choose_color(points) 
         else:
-            draw(points, last_points)
+            if points and last_points:
+                lines.append(((last_points[8]),(points[8]), active_color))
+                for line in lines:
+                    cv2.line(frame, line[0], line[1], line[2], 2)
 
         draw_skeleton(points, frame, active_color)
 
@@ -97,7 +102,7 @@ def check_mode(landmarks):
         return "Select"
     return "Draw"
 
-def draw(points, last_points):
+def draw(points, last_points, lines, frame, active_color):
     pass
 
 def is_pinched(points):
