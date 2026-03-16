@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -57,6 +58,9 @@ def main():
 
         draw_skeleton(points, frame, active_color)
 
+        check_mode(points)
+        choose_color(points) #temporary
+
         cv2.putText(frame, f"Mode: {mode}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
         cv2.putText(frame, F"Current color: ", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255,255,255), 2)
         cv2.putText(frame, COLORS[active_color], (180,60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, active_color, 2)
@@ -70,8 +74,21 @@ def main():
     stream.release()
     cv2.destroyAllWindows()
 
-def check_mode(points, frame):
+def check_mode(points):
     pass
+
+def choose_color(points):
+    fingers = [(8,7), (12,11), (16,15), (20,19)]
+    finger_count = 0
+
+    #loops for fingers excluding thumb
+    for tip, joint in fingers: 
+        if points and points[tip][1] < points[joint][1]:
+            finger_count += 1
+    #checks thumb angle
+    print(finger_count)
+    
+
 
 def get_points(result, points, frame):
     h,w,_ = frame.shape
