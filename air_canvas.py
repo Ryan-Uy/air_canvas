@@ -76,10 +76,11 @@ def main():
         if mode == 'Select':
             active_color = choose_color(points) 
         else:
-            if points and last_points:
+            if points and last_points and cv2.waitKey(1) == ord('d'):
                 lines.append(((last_points[8]),(points[8]), active_color))
-                for line in lines:
-                    cv2.line(frame, line[0], line[1], line[2], 2)
+        if lines:
+            for line in lines:
+                cv2.line(frame, line[0], line[1], line[2], 2)
 
         draw_skeleton(points, frame, active_color)
 
