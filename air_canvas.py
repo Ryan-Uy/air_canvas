@@ -22,15 +22,24 @@ HAND_CONNECTIONS = [(0,1), (1,2), (2,3), (3,4), #thumb
                     (17,18),(18,19), (19,20), #pinky
                     (0,5), (5,9), (9,13), (13,17), (17,0) #palm
                     ]
+                    
+BLACK = (0,0,0) 
+WHITE = (255,255,255)
+RED = (0,0,255)
+ORANGE = (0,165,255)
+YELLOW =(0,255,255)
+GREEN = (0,255,0)
+BLUE = (0,255,0)
+PURPLE = (128,0,128)
 
-COLORS = {(0,0,0) : 'Black',
-          (255,255,255) : 'White',
-          (0,0,255) : 'Red',
-          (0,165,255) : 'Orange',
-          (0,255,255) : 'Yellow',
-          (0,255,0) : 'Green',
-          (255,0,0) : 'Blue',
-          (128,0,128) : 'Purple'}
+COLORS = {BLACK : 'Black',
+          WHITE : 'White',
+          RED : 'Red',
+          ORANGE : 'Orange',
+          YELLOW : 'Yellow',
+          GREEN : 'Green',
+          BLUE : 'Blue',
+          PURPLE : 'Purple'}
 
 
 def main():
@@ -107,13 +116,12 @@ def choose_color(points):
         if angle > 3*np.pi/4:
             finger_count += 1
 
-    colors = {0:(0,0,255), #red 
-              1:(0,165,255), #orange
-              2:(0,255,255), #yellow
-              3:(0,255,0), #green
-              4:(255,0,0), #blue
-              5:(128,0,128) #purple
-              }
+    colors = {0:RED,
+              1:ORANGE,
+              2:YELLOW,
+              3:GREEN,
+              4:BLUE,
+              5:PURPLE,}
     
     return colors[finger_count]
     
