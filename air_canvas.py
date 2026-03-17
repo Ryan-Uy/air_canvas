@@ -9,8 +9,8 @@ BASE_OPTIONS = python.BaseOptions(model_asset_path = "hand_landmarker.task")
 OPTIONS = vision.HandLandmarkerOptions(base_options = BASE_OPTIONS,
                                        running_mode = vision.RunningMode.VIDEO,
                                        num_hands = 2, 
-                                       min_hand_detection_confidence = 0.6,
-                                       min_hand_presence_confidence = 0.6,
+                                       min_hand_detection_confidence = 0.8,
+                                       min_hand_presence_confidence = 0.7,
                                        min_tracking_confidence = 0.6)
 
 MODEL = vision.HandLandmarker.create_from_options(OPTIONS)
@@ -72,12 +72,15 @@ def main():
 
         mode = check_mode(result.hand_landmarks)
 
+        #is_pinched(points)
+
         if mode == 'Select':
             active_color = choose_color(points) 
         elif mode == 'Draw': #saves new lines if in draw mode
             if points and last_points and cv2.waitKey(1) == ord('d'): #temporary waitkey instead of pinch
                 lines.append(((last_points[8]),(points[8]), active_color))
-
+        if cv2.waitKey(1) == ord('e'):
+            erase(points, lines)
         draw(lines, frame)
 
         draw_skeleton(points, frame, active_color)
@@ -106,11 +109,17 @@ def draw(lines, frame):
         for line in lines:
             cv2.line(frame, line[0], line[1], line[2], 2)
 
+def erase(points, lines):
+    length = len(lines)
+    for i in range(length):
+        lines.pop()
+
 def is_pinched(points):
-    index = np.array(points[8])
-    thumb = np.array(points[4])
-    distance = np.linalg.norm(index-thumb)
-    print(f"Distance: {distance:.5f}")
+    if points:
+        index = np.array(points[8])
+        thumb = np.array(points[4])
+        distance = np.linalg.norm(index-thumb)
+        print(f"Distance: {distance:.5f}")
 
 def choose_color(points):
     fingertips = [(8,7), (12,11), (16,15), (20,19)]
