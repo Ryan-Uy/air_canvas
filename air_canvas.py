@@ -75,12 +75,11 @@ def main():
 
         if mode == 'Select':
             active_color = choose_color(points) 
-        else:
-            if points and last_points and cv2.waitKey(1) == ord('d'):
+        elif mode == 'Draw':
+            if points and last_points and cv2.waitKey(1) == ord('d'): #temporary waitkey instead of pinch
                 lines.append(((last_points[8]),(points[8]), active_color))
-        if lines:
-            for line in lines:
-                cv2.line(frame, line[0], line[1], line[2], 2)
+
+        draw(lines, frame)
 
         draw_skeleton(points, frame, active_color)
 
@@ -103,8 +102,10 @@ def check_mode(landmarks):
         return "Select"
     return "Draw"
 
-def draw(points, last_points, lines, frame, active_color):
-    pass
+def draw(lines, frame):
+    if lines: 
+        for line in lines:
+            cv2.line(frame, line[0], line[1], line[2], 2)
 
 def is_pinched(points):
     pass
