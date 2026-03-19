@@ -42,6 +42,7 @@ COLORS = {BLACK : 'Black',
           PURPLE : 'Purple'}
 
 THUMB_ANGLE_THRESHOLD = 2.5 #radians
+PINCH_DISTANCE_THRESHOLD = 25 #px
 
 def main():
     stream = cv2.VideoCapture(0)
@@ -72,12 +73,10 @@ def main():
 
         mode = check_mode(result.hand_landmarks)
 
-        #is_pinched(points)
-
         if mode == 'Select':
             active_color = choose_color(points) 
         elif mode == 'Draw': #saves new lines if in draw mode
-            if points and last_points and cv2.waitKey(1) == ord('d'): #temporary waitkey instead of pinch
+            if points and last_points and is_pinched(points):
                 lines.append(((last_points[8]),(points[8]), active_color))
         if cv2.waitKey(1) == ord('e'):
             erase(points, lines)
@@ -120,6 +119,9 @@ def is_pinched(points):
         thumb = np.array(points[4])
         distance = np.linalg.norm(index-thumb)
         print(f"Distance: {distance:.5f}")
+        if distance < PINCH_DISTANCE_THRESHOLD:
+            return True
+        return False
 
 def choose_color(points):
     fingertips = [(8,7), (12,11), (16,15), (20,19)]
