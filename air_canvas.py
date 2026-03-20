@@ -73,10 +73,19 @@ def main():
 
         mode = check_mode(result.hand_landmarks)
 
+        finger_count = get_finger_count(points)
+        
+        colors = {0 : RED,
+                  1 : ORANGE,
+                  2 : YELLOW,
+                  3 : GREEN,
+                  4 : BLUE,
+                  5 : PURPLE}
+
         if mode == 'Select':
-            active_color = choose_color(points) 
+            active_color = colors[finger_count]
         elif mode == 'Draw': #saves new lines if in draw mode
-            if points and last_points and is_pinched(points):
+            if points and last_points and finger_count <= 2:
                 lines.append(((last_points[8]),(points[8]), active_color))
         if cv2.waitKey(1) == ord('e'):
             erase(points, lines)
@@ -113,17 +122,7 @@ def erase(points, lines):
     for i in range(length):
         lines.pop()
 
-def is_pinched(points):
-    if points:
-        index = np.array(points[8])
-        thumb = np.array(points[4])
-        distance = np.linalg.norm(index-thumb)
-        print(f"Distance: {distance:.5f}")
-        if distance < PINCH_DISTANCE_THRESHOLD:
-            return True
-        return False
-
-def choose_color(points):
+def get_finger_count(points):
     fingertips = [(8,7), (12,11), (16,15), (20,19)]
     finger_count = 0
     if points:
@@ -142,15 +141,8 @@ def choose_color(points):
 
         if angle > THUMB_ANGLE_THRESHOLD: 
             finger_count += 1
-
-    colors = {0:RED,
-              1:ORANGE,
-              2:YELLOW,
-              3:GREEN,
-              4:BLUE,
-              5:PURPLE,}
     
-    return colors[finger_count]   
+    return finger_count 
 
 def get_points(result, points, frame):
     h,w,_ = frame.shape
